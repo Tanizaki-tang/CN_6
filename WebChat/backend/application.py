@@ -1,16 +1,21 @@
 import uvicorn
-from fastapi import FastAPI,WebSocket, WebSocketDisconnect, Depends, Request, Form, UploadFile, File, HTTPException
+from fastapi import FastAPI,WebSocket, WebSocketDisconnect, Depends, Request,  File, HTTPException
 import CorConfig
-import WebChat.backend.Controller.user_list_controller as user_list_controller
-import WebChat.backend.Service.websocket_service as websocket_service
+
+import Service.websocket_service as websocket_service
+import Service.auth_service as auth_service
+import Service.chat_service as chat_service
+import Service.db_service as db_service
 import os
 
 from Service.websocket_service import ws_manager
 
 app = FastAPI(title="Chat Server",version="1.0")
 CorConfig.setupCors(app)
-app.include_router(user_list_controller.router)
+
 app.include_router(websocket_service.router)
+app.include_router(auth_service.router)
+app.include_router(chat_service.router)
 
 
 @app.get("/")
@@ -26,18 +31,11 @@ def index():
 
 
 
-
-
-def main():
-    """
-    启动Web服务
-    """
-    uvicorn.run(
-        app="application:app",
-        host="0.0.0.0",
-        port=8888,
-        reload = True # 开发模式热重载，生产环境关闭
-    )
-
 if __name__ =="__main__":
-    main()
+    db_service.init_db()
+    uvicorn.run(
+            app="application:app",
+            host="0.0.0.0",
+            port=8888,
+            reload = True # 开发模式热重载，生产环境关闭
+        )
