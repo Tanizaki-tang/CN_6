@@ -2,7 +2,8 @@
 管理WebSocket的链接与断开，维护在线ws字典
 '''
 
-from fastapi import WebSocket,  APIRouter
+from fastapi import WebSocket, APIRouter
+from collections.abc import ItemsView
 
 router = APIRouter(prefix='/ws')
 
@@ -27,13 +28,25 @@ class ConnectionManager:
         if self.active_connection.get(user_id) is ws:
             self.active_connection.pop(user_id,None)    #pop会自建空key情况
 
+    async def kick(self,user_id:int):
+        """
+        强制下线：摘掉登记并把连接关掉（HTTP /auth/logout 用）
+        关连接会触发 WS 端点的 finally，从而真正走一遍下线流程
+        """
+        old = self.active_connection.pop(user_id,None)
+        if old is not None:
+            try:
+                await old.close(code=1000) #1000-正常关闭的状态码
+            except Exception:
+                pass
+
     def  get_active_number(self)->int:
         return len(self.active_connection)
 
-    def get_target_ws(self,target_id:int)-> WebSocket:
+    def get_target_ws(self,target_id:int)-> WebSocket | None:
         return self.active_connection.get(target_id)
 
-    def get_connection_items(self)->dict[int,WebSocket]:
+    def get_connection_items(self)->ItemsView[int,WebSocket]:
         return self.active_connection.items()
 
 

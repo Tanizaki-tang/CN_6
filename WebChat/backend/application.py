@@ -1,17 +1,23 @@
 import uvicorn
-from fastapi import FastAPI,WebSocket, WebSocketDisconnect, Depends, Request,  File, HTTPException
-import CorConfig
+from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
 
+import CorConfig
 import Service.websocket_service as websocket_service
 import Service.auth_service as auth_service
 import Service.chat_service as chat_service
-import Service.db_service as db_service
-import os
-
-from Service.websocket_service import ws_manager
+from Service.db_service import init_db
+from Service.paths import UPLOAD_DIR
 
 app = FastAPI(title="Chat Server",version="1.0")
 CorConfig.setupCors(app)
+
+#建表放在模块里(不是__main__)：uvicorn 热重载的子进程只 import 模块，不会跑 __main__
+init_db()
+
+#upload_img 返回的是 /static/uploads/xxx，所以把 static/ 目录挂到 /static
+UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
+app.mount("/static", StaticFiles(directory=str(UPLOAD_DIR.parent)), name="static")
 
 app.include_router(websocket_service.router)
 app.include_router(auth_service.router)
@@ -32,7 +38,7 @@ def index():
 
 
 if __name__ =="__main__":
-    db_service.init_db()
+    #必须在 WebChat/backend 目录下运行：python application.py
     uvicorn.run(
             app="application:app",
             host="0.0.0.0",

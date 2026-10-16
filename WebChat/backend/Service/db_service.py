@@ -1,10 +1,11 @@
 from sqlalchemy.orm import sessionmaker,Session,DeclarativeBase
 from sqlalchemy import create_engine,Column,Integer,String, Boolean , DateTime, ForeignKey
 from contextlib import contextmanager
+from Service.paths import DB_PATH
 
-DB_URL ="sqlite:///./chat.db"
+DB_URL = f"sqlite:///{DB_PATH.as_posix()}"   #绝对路径，不跟cwd跑
 engine= create_engine(DB_URL,connect_args={"check_same_thread":False})
-SessionLocal = sessionmaker(autocommit=False,autoflush=False,bind=engine)
+SessionLocal = sessionmaker(autocommit=False,autoflush=False,bind=engine,expire_on_commit=False)
 
 import datetime
 def utc_now() -> datetime.datetime:
@@ -49,6 +50,9 @@ def get_db():
         db.close()
 
 def init_db():
+    """
+    建表：已存在的表不会被改动，重复调用安全
+    """
     Base.metadata.create_all(engine)
 
 @contextmanager

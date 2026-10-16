@@ -1,11 +1,12 @@
 import logging
+from Service.paths import LOG_PATH
 
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
     handlers=[
         logging.StreamHandler(),    #输出到控制台
-        logging.FileHandler("app.log", encoding="utf-8"),   #输出到文件
+        logging.FileHandler(LOG_PATH, encoding="utf-8"),   #输出到文件(绝对路径，不跟cwd跑)
     ],
 )
 

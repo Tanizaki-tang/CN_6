@@ -1,0 +1,8 @@
+# WebChat 后端依赖（在 WebChat/backend 目录下运行：pip install -r ../requirements.txt）
+fastapi
+uvicorn[standard]
+sqlalchemy
+pydantic
+bcrypt>=4.0
+aiofiles
+python-multipart

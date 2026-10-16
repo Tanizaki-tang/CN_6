@@ -7,7 +7,7 @@ class UserList(BaseModel):
 class Message(BaseModel):
     msg_type: Literal['private','group']
     time:str
-    content:str
+    content:str = ""          #纯图片消息可以只传 img_url
     img_url : Optional[str] =None
     target_uid:Optional[int]=None
     group_id:Optional[int] =None
