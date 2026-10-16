@@ -9,6 +9,7 @@ export default defineConfig({
     port: 8080,
     // 8080 被占用时直接报错退出，而不是自动换成 8081
     // （偷偷换端口 = Origin 变了 = 立刻被 CORS 拦掉，不如早点报错）
-    strictPort: true
+    strictPort: true,
+    host:'0.0.0.0'
   }
 })

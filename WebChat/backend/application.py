@@ -1,13 +1,16 @@
 import uvicorn
-from fastapi import FastAPI
+from fastapi import FastAPI,WebSocket, WebSocketDisconnect, Depends, Request, Form, UploadFile, File, HTTPException
 import CorConfig
-import user_list_controller
-import websocket_server
+import WebChat.backend.Controller.user_list_controller as user_list_controller
+import WebChat.backend.Service.websocket_service as websocket_service
+import os
+
+from Service.websocket_service import ws_manager
 
 app = FastAPI(title="Chat Server",version="1.0")
 CorConfig.setupCors(app)
 app.include_router(user_list_controller.router)
-app.include_router(websocket_server.router)
+app.include_router(websocket_service.router)
 
 
 @app.get("/")
@@ -20,6 +23,10 @@ def index():
         "author":"Tang",
         "version":"1.0"
     }
+
+
+
+
 
 def main():
     """

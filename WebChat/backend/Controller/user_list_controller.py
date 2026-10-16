@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from websocket_server import session_map
+from WebChat.backend.Service.websocket_service import session_map
 
 router = APIRouter(prefix="/list")
 
