@@ -39,6 +39,15 @@ class DBGroup(Base):
     __tablename__="groups"
     id = Column(Integer,primary_key=True)
     group_name=Column(String)
+    owner_id = Column(Integer,ForeignKey('users.id'),nullable=True)   #建群的人，NULL=改造前的旧群
+
+class DBGroupMember(Base):
+    """群成员表：没有它的话群聊只能广播给所有人，"加入群聊"也无从谈起"""
+    __tablename__="group_members"
+    id = Column(Integer,primary_key=True)
+    group_id = Column(Integer,ForeignKey('groups.id'),index=True)
+    user_id = Column(Integer,ForeignKey('users.id'),index=True)
+    join_time = Column(DateTime,default=utc_now)
 
 #endregion
 

@@ -1,8 +1,23 @@
 from pydantic import BaseModel,model_validator,ValidationError
 from typing import List,Optional,Literal
 
+class OnlineUser(BaseModel):
+    """在线用户：前端必须拿到 uid 才能指定私聊的 target_uid"""
+    uid:int
+    name:str
+
 class UserList(BaseModel):
+    #保留 userlist(纯名字)兼容旧前端；users 里额外带 uid
     userlist: List[str]
+    users: List[OnlineUser] = []
+
+class GroupInfo(BaseModel):
+    """群信息：前端靠 is_member / member_count 决定显示"进入"还是"加入" """
+    group_id:int
+    group_name:str
+    owner_id:Optional[int] = None   #没有 owner 的旧数据
+    member_count:int = 0
+    is_member:bool = False
 
 class Message(BaseModel):
     msg_type: Literal['private','group']
